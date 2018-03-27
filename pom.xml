@@ -66,9 +66,9 @@
     
     <pluginRepositories>
         <pluginRepository>
-            <id>mvnrepository</id>
-            <name>mvnrepository public repo</name>
-            <url>https://mvnrepository.com/artifact/</url>
+            <id>central</id>
+            <name>mvn central repo</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
