@@ -26,6 +26,10 @@
         <renjin.version>0.8.2527</renjin.version>
     </properties>
 
+    <scm>
+        <developerConnection>scm:git:git@github.com:AcuoFS/acuo-algo.git</developerConnection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>com.datumbox</groupId>
@@ -49,19 +53,43 @@
 
     <repositories>
         <repository>
+            <id>nexus-acuo</id>
+            <name>acuo public repo</name>
+            <url>https://nexus.acuo.com/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>bedatadriven</id>
             <name>bedatadriven public repo</name>
             <url>https://nexus.bedatadriven.com/content/groups/public/</url>
         </repository>
     </repositories>
-
+    
     <pluginRepositories>
+        <pluginRepository>
+            <id>mvnrepository</id>
+            <name>mvnrepository public repo</name>
+            <url>https://mvnrepository.com/artifact/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
         <pluginRepository>
             <id>bedatadriven</id>
             <name>bedatadriven public repo</name>
             <url>https://nexus.bedatadriven.com/content/groups/public/</url>
         </pluginRepository>
     </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+          <id>nexus-acuo</id>
+          <name>Acuo Repo</name>
+          <url>https://nexus.acuo.com/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -86,6 +114,32 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                    <configuration>
+                        <tag>v${releaseVersion}</tag>
+                        <tagNameFormat>v@{project.version}</tagNameFormat>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>                        
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-scm-plugin</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
