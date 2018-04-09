@@ -157,3 +157,4 @@ SecondAllocationV2<- function(callId_vec,callInfo_df,resource_vec,availAsset_df,
   output_list <- list(callOutput=currentSelection_list,resultAnalysis=resultAnalysis)
   return(output_list)
 }
+
