@@ -3,7 +3,7 @@
 
     <groupId>com.acuo.collateral</groupId>
     <artifactId>acuo-algo</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.6</version>
     <packaging>jar</packaging>
 
     <!-- general information about your package -->
@@ -25,7 +25,7 @@
 
     <scm>
         <developerConnection>scm:git:git@github.com:AcuoFS/acuo-algo.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>v0.0.6</tag>
   </scm>
 
     <dependencies>
