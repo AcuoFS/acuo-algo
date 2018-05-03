@@ -46,7 +46,7 @@ simpleRun <- function(callIds, pref, clientId, callInfoByCallId, availAssetByCal
     }
     # remove assets in availAsset_df but not in assetInfo_df
     rmIdxAvail <- which(is.na(match(availAsset_df$assetId,assetInfo_df$id)))
-    if(length(availAsset_df)>0){
+    if(length(rmIdxAvail)>0){
       availAsset_df <- availAsset_df[-rmIdxAvail,]
     }
     
