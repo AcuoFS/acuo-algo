@@ -1,5 +1,6 @@
 library(hamcrest)
-library(com.acuo.collateral.acuo-algo)
+library(stats)
+library("com.acuo.collateral.acuo-algo")
 
 test.df <- function() {
     df <- data.frame(x = seq(10), y = runif(10))
