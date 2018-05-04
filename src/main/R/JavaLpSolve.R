@@ -157,6 +157,9 @@ CallLpSolve <- function(lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
       #guess.basis(lpModel,lpGuessBasis_vec)
     }
   }
+
+  #lpModel$writeLp("model.lp")
+  lpModel$printLp()
   
   # solve the problem
   resultStatus <- lpModel$solve()
