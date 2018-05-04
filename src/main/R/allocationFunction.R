@@ -178,9 +178,6 @@ ifNewAlloc,allocated_list){
       }
     }
   }
-  # update the available resource based on the new availAsset_df
-  resource_vec <- unique(availAsset_df$assetCustacId)
-  resource_df <- resource_df[match(resource_vec,resource_df$id),]
 
   #### Case When Movement Limit Is 1 Per Margin Statement END ######
 
@@ -198,10 +195,11 @@ ifNewAlloc,allocated_list){
 
     callInfoGroup_df <- callInfo_df[match(callIdGroup_vec,callInfo_df$id),]
     availAssetGroup_df <- availAsset_df[which(availAsset_df$callId %in% callIdGroup_vec),]
-
-    resourceGroup_vec <- unique(availAssetGroup_df$assetCustacId)
-    resourceGroup_df <- resource_df[match(resourceGroup_vec,resource_df$id),]
-
+    
+    updatedInfo <- UpdateResourceInfoAndAvailAsset(resource_df,availAssetGroup_df,length(callIdGroup_vec))
+    resourceGroup_df <- updatedInfo$resource_df
+    availAssetGroup_df <- updatedInfo$availAsset_df
+    
     availInfoGroup_list <- AssetByCallInfo(callIdGroup_vec,resourceGroup_vec,availAssetGroup_df,resourceGroup_df)
 
     if(ifNewAlloc){
@@ -241,7 +239,7 @@ ifNewAlloc,allocated_list){
     checkCallGroup_mat <- finalGroupResult$checkCall_mat
 
     # update the resource_df quantity, rounding
-    quantityUsed_vec <- UsedQtyFromResultList(callOutputGroup_list,resource_vec,callId_vec)
+    quantityUsed_vec <- UsedQtyFromResultList(callOutputGroup_list,resource_df$id,callId_vec)
     resource_df$qtyMin <- round(resource_df$qtyMin - quantityUsed_vec/resource_df$minUnit,4)
 
     for(k in 1:length(callIdGroup_vec)){
@@ -283,9 +281,12 @@ ifNewAlloc,allocated_list){
 
     callInfoGroup_df <- callInfo_df[match(callInThisMs_vec,callInfo_df$id),]
     availAssetGroup_df <- availAsset_df[which(availAsset_df$callId %in% callInThisMs_vec),]
-    resourceGroup_vec <- unique(availAssetGroup_df$assetCustacId)
-    resourceGroup_df <- resource_df[match(resourceGroup_vec,resource_df$id),]
-    availInfoGroup_list <- AssetByCallInfo(callInThisMs_vec,resourceGroup_vec,availAssetGroup_df,resourceGroup_df)
+    
+    updatedInfo <- UpdateResourceInfoAndAvailAsset(resource_df,availAssetGroup_df,length(callInThisMs_vec))
+    resourceGroup_df <- updatedInfo$resource_df
+    availAssetGroup_df <- updatedInfo$availAsset_df
+    
+    availInfoGroup_list <- AssetByCallInfo(callInThisMs_vec,resourceGroup_df$id,availAssetGroup_df,resourceGroup_df)
 
     idxTemp_vec <- match(callInThisMs_vec,names(allocated_list))
     allocatedGroup_list <- allocated_list[idxTemp_vec]
@@ -312,7 +313,7 @@ ifNewAlloc,allocated_list){
       checkCall_mat[which(rownames(checkCall_mat)==callId),2] <- checkCallGroup_mat[which(rownames(checkCallGroup_mat)==callId),2]
     }
     ## update the quantity in  resource_df
-    quantityUsed_vec <- UsedQtyFromResultList(callOutputGroup_list,resource_vec,callId_vec)
+    quantityUsed_vec <- UsedQtyFromResultList(callOutputGroup_list,resource_df$id,callId_vec)
     resource_df$qtyMin <- resource_df$qtyMin - quantityUsed_vec/resource_df$minUnit
 
   }
