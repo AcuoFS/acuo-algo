@@ -200,7 +200,7 @@ ifNewAlloc,allocated_list){
     resourceGroup_df <- updatedInfo$resource_df
     availAssetGroup_df <- updatedInfo$availAsset_df
     
-    availInfoGroup_list <- AssetByCallInfo(callIdGroup_vec,resourceGroup_vec,availAssetGroup_df,resourceGroup_df)
+    availInfoGroup_list <- AssetByCallInfo(callIdGroup_vec,resourceGroup_df$id,availAssetGroup_df,resourceGroup_df)
 
     if(ifNewAlloc){
       allocatedGroup_list <- list()
