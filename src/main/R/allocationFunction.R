@@ -1,6 +1,6 @@
 
 #### Main Function-Interface of Java Start #######
-CallAllocation <- function(algoVersion,scenario,callInfo_df,availAsset_df,resource_df,
+CallAllocation <- function(configurations,algoVersion,scenario,callInfo_df,availAsset_df,resource_df,
 pref_vec,operLimit,operLimitMs_vec,fungible,ifNewAlloc,allocated_list,inputLimit_vec,timeLimit,callOrderMethod,minMoveValue){
   #### Scenario Code Start #########
   # scenario = 1, Algo suggestion
@@ -25,7 +25,7 @@ pref_vec,operLimit,operLimitMs_vec,fungible,ifNewAlloc,allocated_list,inputLimit
   # build scenario into the function
   #### Scenario: Algo suggestion: #####
   if(scenario==1){
-    result <- AllocationAlgo(callId_vec,resource_vec,resource_vec,
+    result <- AllocationAlgo(configurations,callId_vec,resource_vec,resource_vec,
     callInfo_df,availAsset_df,availAsset_df,resource_df,resource_df,pref_vec,operLimit,operLimitMs_vec,fungible,
     algoVersion,minMoveValue,timeLimit,inputLimit_vec,callOrderMethod,
     ifNewAlloc,allocated_list)
@@ -53,14 +53,14 @@ pref_vec,operLimit,operLimitMs_vec,fungible,ifNewAlloc,allocated_list,inputLimit
     resourceCash_vec <- unique(availAssetCash_df$assetCustacId)
     resourceCash_df <- resource_df[match(resourceCash_vec,resource_df$id),]
 
-    result <- AllocationAlgo(callId_vec,resourceCash_vec,resource_vec,
+    result <- AllocationAlgo(configurations,callId_vec,resourceCash_vec,resource_vec,
     callInfo_df,availAssetCash_df,availAsset_df,resourceCash_df,resource_df,
     pref_vec,operLimit,operLimitMs_vec,fungible,
     algoVersion,minMoveValue,timeLimit,inputLimit_vec,callOrderMethod,
     ifNewAlloc,allocated_list)
   } else if(scenario==3){
     pref_vec <- c(0,10,0)
-    result <- AllocationAlgo(callId_vec,resource_vec,resource_vec,
+    result <- AllocationAlgo(configurations,callId_vec,resource_vec,resource_vec,
     callInfo_df,availAsset_df,availAsset_df,resource_df,resource_df,pref_vec,operLimit,operLimitMs_vec,fungible,
     algoVersion,minMoveValue,timeLimit,inputLimit_vec,callOrderMethod,
     ifNewAlloc,allocated_list)
@@ -73,7 +73,7 @@ pref_vec,operLimit,operLimitMs_vec,fungible,ifNewAlloc,allocated_list,inputLimit
 
 
 #### CONNECT TO THE CORE MODULE OF OPTIMIZATION ####################
-AllocationAlgo <- function(callId_vec,resource_vec,resourceOri_vec,callInfo_df,availAsset_df,availAssetOri_df,
+AllocationAlgo <- function(configurations,callId_vec,resource_vec,resourceOri_vec,callInfo_df,availAsset_df,availAssetOri_df,
 resource_df,resourceOri_df,
 pref_vec,operLimit,operLimitMs_vec,fungible,
 algoVersion,minMoveValue,timeLimit,inputLimit_vec,callOrderMethod,
@@ -209,7 +209,7 @@ ifNewAlloc,allocated_list){
       allocatedGroup_list <- allocated_list[idxTemp_vec]
     }
     #### Pre-allocate Start ######################
-    resultPre <- PreAllocation(algoVersion,callIdGroup_vec,callInfoGroup_df,availAssetGroup_df,resourceGroup_df,
+    resultPre <- PreAllocation(configurations,algoVersion,callIdGroup_vec,callInfoGroup_df,availAssetGroup_df,resourceGroup_df,
     pref_vec,operLimitGroup,operLimitGroupMs_vec,fungible,minMoveValue,timeLimit,
     ifNewAlloc,allocatedGroup_list)
 
@@ -223,7 +223,7 @@ ifNewAlloc,allocated_list){
     if(algoVersion==1){
       resultGroup_list <- CoreAlgoV1(coreInput_list,availAssetGroup_df,timeLimit,pref_vec,minMoveValue)#,initAllocation_list)
     } else if(algoVersion==2){
-      resultGroup_list <- CoreAlgoV2(callInfoGroup_df, resourceGroup_df, availInfoGroup_list,
+      resultGroup_list <- CoreAlgoV2(configurations,callInfoGroup_df, resourceGroup_df, availInfoGroup_list,
       timeLimit,pref_vec,operLimitGroup,operLimitGroupMs_vec,fungible,minMoveValue,
       ifNewAlloc,initAllocation_list,allocatedGroup_list)
     }
@@ -261,7 +261,7 @@ ifNewAlloc,allocated_list){
   solverStatus=solverStatus,solverObjValue=solverObjValue,resultAnalysis=resultAnalysis))
 }
 
-PreAllocation <- function(algoVersion,callId_vec,callInfo_df,availAsset_df,resource_df,
+PreAllocation <- function(configurations,algoVersion,callId_vec,callInfo_df,availAsset_df,resource_df,
 pref_vec,operLimit,operLimitMs_vec,fungible,minMoveValue,timeLimit,
 ifNewAlloc,allocated_list){
   ## callInfo_df: in group
@@ -294,7 +294,7 @@ ifNewAlloc,allocated_list){
     if(algoVersion==1){
       resultGroup_list <- CoreAlgoV1(coreInput_list,availAssetGroup_df,timeLimit,pref_vec,minMoveValue)
     } else if(algoVersion==2){
-      resultGroup_list <- CoreAlgoV2(callInfoGroup_df, resourceGroup_df, availInfoGroup_list,
+      resultGroup_list <- CoreAlgoV2(configurations,callInfoGroup_df, resourceGroup_df, availInfoGroup_list,
       timeLimit,pref_vec,operLimitMs,operLimitMs,fungible,minMoveValue,
       ifNewAlloc,list(),allocatedGroup_list)
     }

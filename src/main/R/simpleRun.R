@@ -1,4 +1,5 @@
-simpleRun <- function(callIds, pref, clientId, callInfoByCallId, availAssetByCallIdAndClientId, assetInfoByAssetId) {
+simpleRun <- function(callIds, pref, clientId, callInfoByCallId, availAssetByCallIdAndClientId, assetInfoByAssetId,
+                      debugMode) {
     #### parameters checking ####
     if(length(unlist(callIds))==0){
       stop('Empty callIds input!')
@@ -65,7 +66,9 @@ simpleRun <- function(callIds, pref, clientId, callInfoByCallId, availAssetByCal
     updateInfo <- UpdateResourceInfoAndAvailAsset(resource_df,availAsset_df,length(callInfo_df$id))
     resource_df <- updateInfo$resource_df
     availAsset_df <- updateInfo$availAsset_df
-    ###### END ####################################
+    
+    #### configurations #####
+    configurations <- list(debugMode=debugMode)
 
     #### CALL THE ALLOCATION FUNCTION ###########
     algoVersion <- 2
@@ -73,7 +76,7 @@ simpleRun <- function(callIds, pref, clientId, callInfoByCallId, availAssetByCal
     operLimitMs_vec <- rep(operLimitMs,msNum)
     operLimit<- sum(operLimitMs_vec)
 
-    result <- CallAllocation(algoVersion,scenario=1,
+    result <- CallAllocation(configurations,algoVersion,scenario=1,
                               callInfo_df,availAsset_df,resource_df,pref_vec,operLimit,operLimitMs_vec,fungible,
                               ifNewAlloc=T,list())
     #result_df <- ResultList2Df(result$callOutput,callId_vec)

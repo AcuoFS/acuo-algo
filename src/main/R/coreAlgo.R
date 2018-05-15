@@ -1,5 +1,5 @@
 
-CoreAlgoV2 <- function(callInfo_df, resource_df, availInfo_list,
+CoreAlgoV2 <- function(configurations,callInfo_df, resource_df, availInfo_list,
                        timeLimit,pref_vec,operLimit,operLimitMs_vec,fungible,
                        minMoveValue,ifNewAlloc,initAllocation_list,allocated_list){
   
@@ -196,7 +196,7 @@ CoreAlgoV2 <- function(callInfo_df, resource_df, availInfo_list,
     
     #### Solve the Model Start ###############
     #### call lpSolve solver
-    solverOutput_list <- CallLpSolve(lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
+    solverOutput_list <- CallLpSolve(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
                                      lpType_vec=lpType_vec,lpKind_vec=lpKind_vec,lpLowerBound_vec=lpLowerBound_vec,lpUpperBound_vec=lpUpperBound_vec,lpBranchMode_vec=lpBranchMode_vec,
                                      lpGuessBasis_vec=lpGuessBasis_vec, 
                                      presolve=lpPresolve,epsd=lpEpsd,timeout=lpTimeout,bbRule=bbRule,

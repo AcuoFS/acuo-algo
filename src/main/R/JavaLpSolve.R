@@ -1,4 +1,4 @@
-CallLpSolve <- function(lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
+CallLpSolve <- function(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
                         lpType_vec,lpKind_vec,lpLowerBound_vec,lpUpperBound_vec,lpBranchMode_vec,
                         lpGuessBasis_vec,
                         presolve,epsd,timeout,bbRule,epsint,
@@ -159,7 +159,9 @@ CallLpSolve <- function(lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
   }
 
   #lpModel$writeLp("model.lp")
-  lpModel$printLp()
+  if(configurations$debugMode){
+	lpModel$printLp()
+  }
   
   # solve the problem
   resultStatus <- lpModel$solve()
