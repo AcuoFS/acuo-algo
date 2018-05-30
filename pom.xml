@@ -78,18 +78,6 @@
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.8.0</version>
-            <scope>test</scope>
-        </dependency>
-        <!--dependency>
-            <groupId>org.renjin</groupId>
-            <artifactId>renjin-maven-plugin</artifactId>
-            <version>${renjin.version}</version>
-            <scope>test</scope>
-        </dependency-->
     </dependencies>
 
     <repositories>

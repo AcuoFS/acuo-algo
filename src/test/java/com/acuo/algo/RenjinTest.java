@@ -1,5 +1,6 @@
 package com.acuo.algo;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.renjin.sexp.DoubleVector;
 
@@ -7,6 +8,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class RenjinTest extends EvalTestCase {
+
+    @Before
+    public void setUp() {
+        eval("library(stats)");
+        eval("library(\"com.acuo.collateral.acuo-algo\")");
+    }
 
     @Test
     public void test() {
@@ -35,6 +42,12 @@ public class RenjinTest extends EvalTestCase {
 
         assertThat(eval("x$df1$col1"), closeTo(c_i(1, 1, 1, 1, 1), 0.00001));
         assertThat(eval("x$df1$col2"), closeTo(c_i(3, 3, 3, 3, 3), 0.00001));
+    }
+
+    @Test
+    public void testPasteFun1() {
+        eval("x <- PasteFun1('a', 'b')");
+        assertThat(eval("x"), equalTo(c("a_b")));
     }
 
 }

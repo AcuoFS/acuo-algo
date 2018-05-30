@@ -23,20 +23,17 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
-import org.renjin.eval.Context;
 import org.renjin.eval.EvalException;
+import org.renjin.eval.Session;
+import org.renjin.eval.SessionBuilder;
 import org.renjin.invoke.reflection.converters.Converters;
 import org.renjin.parser.RParser;
-import org.renjin.primitives.Warning;
 import org.renjin.repackaged.guava.collect.Lists;
 import org.renjin.repackaged.guava.primitives.UnsignedBytes;
 import org.renjin.sexp.ComplexArrayVector;
 import org.renjin.sexp.ComplexVector;
 import org.renjin.sexp.DoubleArrayVector;
-import org.renjin.sexp.Environment;
 import org.renjin.sexp.ExpressionVector;
-import org.renjin.sexp.FunctionCall;
 import org.renjin.sexp.IntArrayVector;
 import org.renjin.sexp.ListVector;
 import org.renjin.sexp.Logical;
@@ -45,67 +42,30 @@ import org.renjin.sexp.Null;
 import org.renjin.sexp.RawVector;
 import org.renjin.sexp.SEXP;
 import org.renjin.sexp.StringArrayVector;
-import org.renjin.sexp.StringVector;
 import org.renjin.sexp.Symbol;
 import org.renjin.sexp.Vector;
 
-import java.io.IOException;
 import java.util.List;
 
 public abstract class EvalTestCase {
 
-
-    protected Environment global;
-    protected Environment base;
-    protected Context topLevelContext;
     public static final SEXP NULL = Null.INSTANCE;
     public static final SEXP CHARACTER_0 = new StringArrayVector();
     public static final SEXP DOUBLE_0 = new DoubleArrayVector();
 
-    public SEXP GlobalEnv;
-
-    @Before
-    public final void setUp() throws IOException {
-        topLevelContext = Context.newTopLevelContext();
-        topLevelContext.init();
-        topLevelContext.evaluate(FunctionCall.newCall(Symbol.get("library"), Symbol.get("stats")));
-        global = topLevelContext.getEnvironment();
-        base = topLevelContext.getBaseEnvironment();
-        GlobalEnv = global;
-    }
+    private Session session = new SessionBuilder().build();
 
     protected SEXP eval(String source) {
-        SEXP result;
-        try {
-            result = evaluate(source);
-        } catch (EvalException e) {
-            e.printRStackTrace(System.err);
-            throw e;
-        }
-        printWarnings();
-        return result;
-    }
-
-
-    private void printWarnings() {
-        SEXP warnings = topLevelContext.getBaseEnvironment().getVariable(topLevelContext, Warning.LAST_WARNING);
-        if (warnings != Symbol.UNBOUND_VALUE) {
-            topLevelContext.evaluate(FunctionCall.newCall(Symbol.get("print.warnings"), warnings),
-                    topLevelContext.getBaseEnvironment());
-
-            System.out.println();
-        }
-    }
-
-
-    protected SEXP evaluate(String source) {
         if (!source.endsWith(";") && !source.endsWith("\n")) {
             source = source + "\n";
         }
         SEXP exp = RParser.parseSource(source);
-
-
-        return topLevelContext.evaluate(exp);
+        try {
+            return session.getTopLevelContext().evaluate(exp);
+        } catch (EvalException e) {
+            e.printRStackTrace(System.out);
+            throw new RuntimeException(e);
+        }
     }
 
     protected Complex complex(double real) {
@@ -330,8 +290,4 @@ public abstract class EvalTestCase {
         };
     }
 
-    protected final String getString(String variableName) {
-        SEXP sexp = topLevelContext.getGlobalEnvironment().getVariable(topLevelContext, variableName);
-        return ((StringVector) sexp).getElementAsString(0);
-    }
 }
