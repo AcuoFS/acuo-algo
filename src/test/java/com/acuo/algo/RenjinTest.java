@@ -3,7 +3,8 @@ package com.acuo.algo;
 import org.junit.Test;
 import org.renjin.sexp.DoubleVector;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class RenjinTest extends EvalTestCase {
 
@@ -11,8 +12,8 @@ public class RenjinTest extends EvalTestCase {
     public void test() {
         // Sanity check
         DoubleVector result = (DoubleVector) eval("1+1");
-        assertThat(result.length()).isEqualTo(1);
-        assertThat(result.getElementAsDouble(0)).isEqualTo(2.0);
+        assertThat(result.length(), equalTo(1));
+        assertThat(result.getElementAsDouble(0), equalTo(2.0));
 
         // Produce some output
         eval("print(rnorm(10))");
@@ -30,7 +31,10 @@ public class RenjinTest extends EvalTestCase {
         eval("df2 <- data.frame(col1=rep(3,5),col2=rep(3,5))");
 
         eval("x <- DfListFun(df1, df2)");
-        eval("print(x[1])");
+        eval("print(x$df1)");
+
+        assertThat(eval("x$df1$col1"), closeTo(c_i(1, 1, 1, 1, 1), 0.00001));
+        assertThat(eval("x$df1$col2"), closeTo(c_i(3, 3, 3, 3, 3), 0.00001));
     }
 
 }
