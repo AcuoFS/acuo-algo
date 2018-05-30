@@ -4,6 +4,7 @@ import org.renjin.sexp.DoubleVector
 import org.renjin.sexp.SEXP
 import spock.lang.Specification
 
+import static com.acuo.algo.RenjinMatchers.closeTo
 import static org.hamcrest.Matchers.equalTo
 import static spock.util.matcher.HamcrestSupport.that
 
@@ -42,8 +43,8 @@ class RenjinSpec extends Specification implements RenjinEval {
         eval('print(x$df1)')
 
         then:
-        that eval('x$df1$col1'), RenjinMatchers.closeTo(c_i(1, 1, 1, 1, 1), 0.00001)
-        that eval('x$df1$col2'), RenjinMatchers.closeTo(c_i(3, 3, 3, 3, 3), 0.00001)
+        that eval('x$df1$col1'), closeTo(c_i(1, 1, 1, 1, 1), 0.00001)
+        that eval('x$df1$col2'), closeTo(c_i(3, 3, 3, 3, 3), 0.00001)
     }
 
     void "PasteFun1 concatenation of two sting"() {
