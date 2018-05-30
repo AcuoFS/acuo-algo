@@ -12,7 +12,7 @@ public class RenjinTest extends EvalTestCase {
     @Before
     public void setUp() {
         eval("library(stats)");
-        eval("library(\"com.acuo.collateral.acuo-algo\")");
+        eval("library(\'com.acuo.collateral.acuo-algo\')");
     }
 
     @Test
