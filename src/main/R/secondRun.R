@@ -1,4 +1,14 @@
-secondRun <- function(callIds, dsCallIds, assetId, pref, clientId, selections, callInfoByCallId, availAssetByCallIdAndClientId, assetInfoByAssetId) {
+secondRun <- function(callIds,
+                      dsCallIds,
+                      assetId,
+                      pref,
+                      clientId,
+                      selections,
+                      callInfoByCallId,
+                      availAssetByCallIdAndClientId,
+                      assetInfoByAssetId,
+                      operLimitMs,
+                      fungible) {
 
     if(length(unlist(callIds))==0){
       stop('Empty callIds input!')
@@ -75,9 +85,9 @@ secondRun <- function(callIds, dsCallIds, assetId, pref, clientId, selections, c
 
     algoVersion <- 2
     msNum <- length(unique(callInfo_df$marginStatement))
-    operLimitMs_vec <- rep(2,msNum)
+    operLimitMs_vec <- rep(operLimitMs,msNum)
     operLimit<- sum(operLimitMs_vec)
-    fungible <- FALSE
+    #fungible <- FALSE
     #### Input Prepare END ##############
 
     #### Correct Order for One Margin Call Allocation
