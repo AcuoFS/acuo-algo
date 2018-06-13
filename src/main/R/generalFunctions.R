@@ -153,14 +153,11 @@ CheckResultVec <- function(result_mat,quantityTotal_vec,callId_vec,callAmount_ve
   for(k in 1:callNum){
     idxNeg_vec <- which(result_mat[k,]<0)
     if(length(idxNeg_vec)>=1){
-      quantityTotal_vec[idxNeg_vec] <- quantityTotal_vec[idxNeg_vec] - result_mat[k,idxNeg_vec]
       result_mat[k,idxNeg_vec] <-0 # set to 0 first, then check the other two criteria
     }
   }
 
   # whether meet the constraint
-
-
   # 2. whether statisfy the quantity limits
   quantityUsed_vec <- apply(result_mat,2,sum)
   quantityLeft_vec <- quantityTotal_vec-quantityUsed_vec
@@ -228,8 +225,11 @@ CheckResultVec <- function(result_mat,quantityTotal_vec,callId_vec,callAmount_ve
             otherAmount <- sum(result_mat[,-i][which(result_mat[-i]>0)]*minUnitValue_mat[,-i][which(result_mat[-i]>0)]*
               (1-haircut_mat[,-i][which(result_mat[-i]>0)]))
           } else{
-            otherAmount <- sum(result_mat[,-i][j,which(result_mat[j,-i]>0)]*minUnitValue_mat[,-i][j,which(result_mat[j,-i]>0)]*
-              (1-haircut_mat[,-i][j,which(result_mat[j,-i]>0)]))
+            tempResult_vec <- result_mat[j,-i]
+            tempMinUnitValue_vec <- minUnitValue_mat[j,-i]
+            tempHaircut_vec <- haircut_mat[j,-i]
+            idx <- which(tempResult_vec > 0)
+            otherAmount <- tempResult_vec[idx]*tempMinUnitValue_vec[idx]*(1-tempHaircut_vec[idx])
           }
           missingAmount <- callAmount_vec[j]-(otherAmount+newQuantity*minUnitValue_mat[j,i]*(1-haircut_mat[j,i]))
           # missingAmount<0, means even we substract the exceed quantity of the asset,
@@ -331,7 +331,7 @@ CheckResultVec <- function(result_mat,quantityTotal_vec,callId_vec,callAmount_ve
     }
   }
 
-  return(list(result_mat=result_mat,quantityTotal_vec=quantityTotal_vec))
+  return(list(result_mat=result_mat))
 }
 
 #### convertFunctions ####

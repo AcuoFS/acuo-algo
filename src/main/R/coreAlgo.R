@@ -238,7 +238,6 @@ CoreAlgoV2 <- function(configurations,callInfo_df, resource_df, availInfo_list,
   
   checkResult <- CheckResultVec(result_mat,quantityTotal_vec=resource_df$qtyMin,callId_vec,callInfo_df$callAmount,minUnitValue_mat,haircut_mat,eli_mat)
   result_mat <- checkResult$result_mat
-  resource_df$qtyMin <- checkResult$quantityTotal_vec
   
   #### Prepare Outputs Start #######################
   #### convert the result_mat to list
