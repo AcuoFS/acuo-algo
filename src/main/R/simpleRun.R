@@ -1,4 +1,11 @@
-simpleRun <- function(callIds, pref, clientId, callInfoByCallId, availAssetByCallIdAndClientId, assetInfoByAssetId,
+simpleRun <- function(callIds,
+                      pref,
+                      clientId,
+                      callInfoByCallId,
+                      availAssetByCallIdAndClientId,
+                      assetInfoByAssetId,
+                      operLimitMs,
+                      fungible,
                       debugMode) {
     #### parameters checking ####
     if(length(unlist(callIds))==0){
@@ -24,8 +31,8 @@ simpleRun <- function(callIds, pref, clientId, callInfoByCallId, availAssetByCal
     #### rename the parameters ####
     callId_vec <- callIds
     pref_vec <- pref
-    operLimitMs <- 2
-    fungible <- FALSE
+    #operLimitMs <- 2
+    #fungible <- FALSE
     callInfo_df <- callInfoByCallId
     assetInfo_df <- assetInfoByAssetId
     availAsset_df <- availAssetByCallIdAndClientId
