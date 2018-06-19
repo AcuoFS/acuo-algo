@@ -386,13 +386,8 @@ callSelect_list,msSelect_list){
       errormsg <- paste("ALERR3004: There's no asset allocated to margin call",callId_vec[i])
       stop(errormsg)
     }
-
     alloc_df <- ConstructAllocDf(resourceInfo_df[idx_vec,], callInfo_df[i,], haircutC_mat[i,idx_vec], haircutFX_mat[i,idx_vec],result_mat[i,idx_vec],cost_mat[i,idx_vec])
 
-    #### UPDATE THE ASSET QUANTITY START ########
-    resourceInfo_df$quantity[idx_vec] <- resourceInfo_df$quantity[idx_vec]-alloc_df$Quantity #selectAssetQuantity_vec
-
-    #### UPDATE THE ASSET QUANTITY END ##########
     #### Update callSelect_list Start ####
     callSelect_list[[callId_vec[i]]] <- alloc_df
     #### Update callSelect_list END ######
@@ -473,39 +468,6 @@ ResultList2Vec <- function(callOutput_list,callId_vec,minUnit_vec,varName_vec,va
   result2_vec <- ((var2_df$real) & 1)*1
 
   result_vec <- c(result1_vec,result2_vec)
-
-  return(result_vec)
-}
-
-ResultList2DummyVec <- function(callOutput_list,callId_vec,varName_vec,varNum){
-  varNum2 <- length(varName_vec)
-  result_vec <- rep(0,varNum2)
-  callNum <- length(callId_vec)
-
-  for(m in 1:callNum){
-    callId <- callId_vec[m]
-    callAlloc_df <- callOutput_list[[callId]]
-
-    # find the corresponding decision variable index from the varName
-    resourceTemp_vec <- PasteResource(callAlloc_df$Asset,callAlloc_df$CustodianAccount)
-    varNameTemp_vec <- PasteVarName(callAlloc_df$marginStatement,callAlloc_df$marginCall,resourceTemp_vec)
-
-    for(k in 1:length(resourceTemp_vec)){
-      idxVarTemp <- which(varName_vec==varNameTemp_vec[k])
-      result_vec[idxVarTemp] <- 1
-    }
-  }
-  temp <- varNum2-varNum
-  result1_mat <- matrix(rep(result_vec[1:varNum],temp),ncol=varNum,byrow=T)
-  result2_mat <- result1_mat*fCon4_mat[1:temp,1:varNum]
-
-  if(temp>1){
-    temp_vec <- apply(result2_mat,1,sum)
-  } else{
-    temp_vec <- sum(result2_mat) # by row
-  }
-
-  result_vec[(varNum+1):varNum2] <- 1*(temp_vec & 1) # recalculate the dummy value
 
   return(result_vec)
 }
@@ -1310,6 +1272,8 @@ VarInfo <- function(eli_vec,callInfo_df,resource_vec,callId_vec){
 
   # use the dummies to construct the indicator
   # same number means same asset for same statement: 1,2,3,4,1,2,4,5,...
+  # the first '2' (position 2) means the second qty decision variable relates to the second dummy decision variable
+  # the second '2' (position 6)  means the sixth qty decision variable relates to the second dummy decision variable
   pos_vec <- match(newNameOri_vec,newNameDummy_vec)
 
   varName_vec <- c(varNameOri_vec,newNameDummy_vec)
