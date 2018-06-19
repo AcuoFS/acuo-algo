@@ -19,7 +19,7 @@ class CallLpSolveSpec extends Specification implements RenjinEval {
     eval('import(lpsolve.LpSolve)')
   }
 
-  void "CallLpSolve calculates the Reserved Liquidity Ratio for available assets pool"() {
+  void "Try lpSolve"() {
     given:
     eval('lpModel <- LpSolve$makeLp(0L, 4L)')
     eval('lpModel$strAddConstraint("3 2 2 1", 1L, 4)')
@@ -37,6 +37,61 @@ class CallLpSolveSpec extends Specification implements RenjinEval {
 
     cleanup:
     eval('lpModel$deleteLp()')
+  }
+
+  void "Try CallLpSolve in 5 decision variables scenario"() {
+    given:
+    // model: 5 decision variables
+    // Objective: Min(0.01 x1 + 0.01 x2 + 0.02 x3)
+    // Constraints
+    // x1 + x2 <= 5000
+    // x3 <= 4000
+    // x1 + x3 >= 1000
+    // x2 >= 2000
+    // x1 + x2 - 5000x4 <= 0
+    // x1 + x2 - x4 >= 0
+    // x3 - 6000x5 <= 0
+    // x3 - x5 >= 0
+
+    eval('configurations <- list(debugMode=FALSE)')
+    eval('lpObj_vec <- c(0.01,0.01,0.02,0,0)')
+    eval('lpCon_mat <- matrix(c(1,1,0,0,0,' +
+      '                         0,0,1,0,0,' +
+      '                         1,0,1,0,0,' +
+      '                         0,2,0,0,0,' +
+      '                         1,1,0,-5000,0,' +
+      '                         1,1,0,-1,0,' +
+      '                         0,0,1,0,-6000,' +
+      '                         0,0,1,0,-1),' +
+      'nrow = 8, byrow = T)')
+    eval('lpDir_vec <- c(\'<=\',\'<=\',\'>=\',\'>=\',\'<=\',\'>=\',\'<=\',\'>=\')')
+    eval('lpRhs_vec <- c(5000,4000,1000,2000,0,0,0,0)')
+    eval('lpType_vec <- rep(\'integer\',5)')
+    eval('lpKind_vec <- rep(\'semi-continuous\',5)')
+    eval('lpLowerBound_vec <- rep(0,5)')
+    eval('lpUpperBound_vec <- c(5000,5000,6000,1,1)')
+    eval('lpBranchMode_vec <- rep(\'auto\',5)')
+    eval('lpGuessBasis_vec <- rep(0,5)')
+    eval('presolve <- c(\'none\')')
+    eval('epsd <- c(1e-9)')
+    eval('timeout <- c(13)')
+    eval('bbRule <- c(\'pseudononint\',\'autoorder\',\'greedy\', \'dynamic\',\'rcostfixing\',\'branchreverse\')')
+    eval('epsint <- c(1e-9)')
+    eval('scaling <- c(\'geometric\',\'quadratic\',\'equilibrate\', \'integers\')')
+    eval('improve <- c(\'solution\',\'dualfeas\',\'thetagap\')')
+
+    when:
+    eval('result <- CallLpSolve(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,\n' +
+      '                        lpType_vec,lpKind_vec,lpLowerBound_vec,lpUpperBound_vec,lpBranchMode_vec,\n' +
+      '                        lpGuessBasis_vec,\n' +
+      '                        presolve,epsd,timeout,bbRule,epsint,\n' +
+      '                        scaling,improve)')
+    eval('print(result)')
+    then:
+    that eval('result$solverSolution_vec'), equalTo(c(1000,1000,0,1,0) as SEXP)
+    that eval('result$resultStatus + 0'), equalTo(c(0) as SEXP)
+    // eval('result$solverObjValue'): 19.999999999999996
+    that eval('round(result$solverObjValue,4)'), equalTo(c(20) as SEXP)
   }
 
 }
