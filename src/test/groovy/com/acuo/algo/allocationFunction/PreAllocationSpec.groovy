@@ -50,11 +50,11 @@ class PreAllocationSpec extends Specification implements RenjinEval {
       'oriFXRate = c(1.2,1),\n' +
       'stringsAsFactors = F)')
     eval('availAsset_df <- data.frame(\n' +
-      'callId = c(\'mc1\',\'mc1\',\'mc2\'),\n' +
+      'callId = c(\'mc1\',\'mc2\',\'mc2\'),\n' +
       'assetCustacId = c(\'EUR---ca2\',\'EUR---ca2\',\'USD---ca1\'),\n' +
       'haircut = c(0,0,0),\n' +
-      'FXHaircut = c(0,0.08,0),\n' +
-      'externalCost = c(0.0001,0.0001,0.0001),\n' +
+      'FXHaircut = c(0.08,0.08,0),\n' +
+      'externalCost = c(0.0001,0.0003,0.0001),\n' +
       'interestRate = c(0.0001,-0.0001,0.0001),\n' +
       'internalCost = c(0.0002,0.0001,0.0002),\n' +
       'opptCost = c(0.0001,-0.0001,0.0001),\n' +
@@ -83,7 +83,7 @@ class PreAllocationSpec extends Specification implements RenjinEval {
     that eval('result$callOutput_list$mc1$FXRatePerUSD'), equalTo(c(0.83) as SEXP)
     that eval('result$callOutput_list$mc1$FXRate'), equalTo(c(1.2) as SEXP)
     that eval('result$callOutput_list$mc1$marginType'), equalTo(c('Initial') as SEXP)
-    that eval('round(result$callOutput_list$mc1$Cost,4)'), equalTo(c(0.2176) as SEXP)
+    that eval('round(result$callOutput_list$mc1$Cost,4)'), equalTo(c(0.3264) as SEXP)
 
     // check allocation result for mc2
     that eval('result$callOutput_list$mc2$Asset'), equalTo(c('USD') as SEXP)
