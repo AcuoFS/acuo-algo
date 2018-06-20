@@ -26,11 +26,11 @@ class PreAllocationSpec extends Specification implements RenjinEval {
       'id=c(\'mc1\',\'mc2\'),' +
       'marginStatement=c(\'ms1\',\'ms1\'),' +
       'marginType=c(\'Initial\',\'Variation\'),\n' +
-      'currency=c(\'EUR\',\'JPY\'),\n' +
+      'currency=c(\'EUR\',\'USD\'),\n' +
       'callAmount=c(1000,2000),\n' +
       'FXRate=c(1.2,100),\n' +
       'from=c(\'EUR\',\'USD\'),\n' +
-      'to=c(\'USD\',\'JPY\'),\n' +
+      'to=c(\'USD\',\'USD\'),\n' +
       'stringsAsFactors = F)\n')
     eval('resource_df <- data.frame(\n' +
       'id = c(\'EUR---ca2\',\'USD---ca1\'), \n' +
@@ -103,11 +103,11 @@ class PreAllocationSpec extends Specification implements RenjinEval {
       'id=c(\'mc1\',\'mc2\'),' +
       'marginStatement=c(\'ms1\',\'ms1\'),' +
       'marginType=c(\'Initial\',\'Variation\'),\n' +
-      'currency=c(\'EUR\',\'JPY\'),\n' +
+      'currency=c(\'EUR\',\'USD\'),\n' +
       'callAmount=c(5000,3000),\n' +
       'FXRate=c(1.2,100),\n' +
       'from=c(\'EUR\',\'USD\'),\n' +
-      'to=c(\'USD\',\'JPY\'),\n' +
+      'to=c(\'USD\',\'USD\'),\n' +
       'stringsAsFactors = F)\n')
     eval('resource_df <- data.frame(\n' +
       'id = c(\'EUR---ca2\',\'USD---ca1\'), \n' +
