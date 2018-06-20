@@ -59,7 +59,6 @@ class PreAllocationSpec extends Specification implements RenjinEval {
       'internalCost = c(0.0002,0.0001,0.0002),\n' +
       'opptCost = c(0.0001,-0.0001,0.0001),\n' +
       'stringsAsFactors = F)')
-    eval('availInfo_list <- AssetByCallInfo(callInfo_df$id,resource_df$id,availAsset_df,resource_df)')
     eval('timeLimit <- 13')
     eval('pref_vec <- c(5,5)')
     eval('operLimit <- 4')
