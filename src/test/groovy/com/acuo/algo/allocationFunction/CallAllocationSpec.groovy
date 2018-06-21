@@ -28,7 +28,7 @@ class CallAllocationSpec extends Specification implements RenjinEval {
       'marginType=c(\'Initial\',\'Variation\'),\n' +
       'currency=c(\'EUR\',\'USD\'),\n' +
       'callAmount=c(1000,2000),\n' +
-      'FXRate=c(1.2,100),\n' +
+      'FXRate=c(0.83,1),\n' +
       'from=c(\'EUR\',\'USD\'),\n' +
       'to=c(\'USD\',\'USD\'),\n' +
       'stringsAsFactors = F)\n')
