@@ -1,8 +1,7 @@
 CallLpSolve <- function(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
                         lpType_vec,lpKind_vec,lpLowerBound_vec,lpUpperBound_vec,lpBranchMode_vec,
                         lpGuessBasis_vec,
-                        presolve,epsd,timeout,bbRule,epsint,
-                        scaling,improve){
+                        presolve,timeout){
   # input variables
   # must have: lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec
   # optional: lpType_vec,lpKind_vec,lpLowerBound_vec,lpUpperBound_vec,lpBranchMode_vec
@@ -98,15 +97,17 @@ CallLpSolve <- function(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
     }
   }
   
-  # set control options
-  if(!missing(epsd)){
-    lpModel$setEpsd(epsd)
+  # guess basis
+    if(!missing(lpGuessBasis_vec)){
+    if(!all(lpGuessBasis_vec==0)){
+      #basis_vec <- rep(0,1+length(lpCon_mat[1,])+length(lpCon_mat[,1]))
+      #lpModel$guessBasis(c(0,lpGuessBasis),basis_vec)
+      #guess.basis(lpModel,lpGuessBasis_vec)
+    }
   }
-  
-  if(!missing(epsint)){
-    lpModel$setEpsint(epsint)
-  }
-  
+
+    # set control options
+
   if(!missing(presolve)){
     if(presolve=='none'){
       lpModel$setPresolve(LpSolve$PRESOLVE_NONE,as.integer(1e6))
@@ -118,47 +119,26 @@ CallLpSolve <- function(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
   if(!missing(timeout)){
     lpModel$setTimeout(as.integer(timeout))
   }
-  
-  if(!missing(bbRule)){
-    if(all.equal(sort(bbRule),sort(c("pseudononint","autoorder","greedy", "dynamic","rcostfixing")))==TRUE){
-      bbRuleValue <- 25637
-      lpModel$setBbRule(as.integer(bbRuleValue))
-    } else if(all.equal(sort(bbRule),sort(c("pseudononint", "greedy", "dynamic","rcostfixing")))==TRUE){
-      bbRuleValue <- 17445
-      lpModel$setBbRule(as.integer(bbRuleValue))
-    } else if(all.equal(sort(bbRule),sort(c("pseudononint","autoorder","greedy", "dynamic","rcostfixing","branchreverse")))==TRUE){
-      bbRuleValue <- 25653
-      lpModel$setBbRule(as.integer(bbRuleValue))
-    }
-  }
-  
-  if(!missing(scaling)){
-    if(all.equal(sort(scaling),sort(c("geometric","quadratic","equilibrate", "integers")))==TRUE){
-      scalingValue <- 204
-      #lpModel$setScaling(as.integer(scalingValue))
-    }
-  }
-  
-  if(!missing(improve)){
-    if(all.equal(sort(improve),sort(c("solution","dualfeas","thetagap")))==TRUE){
-      improveValue <- 7
-      lpModel$setImprove(as.integer(improveValue))
-    }
-  }
+
+   #bbRuleValue <- 17445 # bbRule = c("pseudononint", "greedy", "dynamic","rcostfixing") (default)
+   bbRuleValue <- 25653 # bbRule = c("pseudononint","autoorder","greedy", "dynamic","rcostfixing","branchreverse")
+   lpModel$setBbRule(as.integer(bbRuleValue))
+   
+  lpModel$setEpsd(1e-9)
+  lpModel$setEpsint(1e-9)
+  scalingValue <- 204 # scaling = c("geometric","quadratic","equilibrate", "integers")
+  #lpModel$setScaling(as.integer(scalingValue))
+
+  improveValue <- 7 # improve = c("solution","dualfeas","thetagap")
+  lpModel$setImprove(as.integer(improveValue))
+
   
   #if(!missing(negrange)){
   #  lpModel$setNegrange(as.integer(-1e-4))
   #}
   
-  if(!missing(lpGuessBasis_vec)){
-    if(!all(lpGuessBasis_vec==0)){
-      #basis_vec <- rep(0,1+length(lpCon_mat[1,])+length(lpCon_mat[,1]))
-      #lpModel$guessBasis(c(0,lpGuessBasis),basis_vec)
-      #guess.basis(lpModel,lpGuessBasis_vec)
-    }
-  }
 
-  #lpModel$writeLp("model.lp")
+  lpModel$writeLp("model.lp")
   if(configurations$debugMode){
 	lpModel$printLp()
   }
