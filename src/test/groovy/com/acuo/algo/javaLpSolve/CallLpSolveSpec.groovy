@@ -73,19 +73,13 @@ class CallLpSolveSpec extends Specification implements RenjinEval {
     eval('lpBranchMode_vec <- rep(\'auto\',5)')
     eval('lpGuessBasis_vec <- rep(0,5)')
     eval('presolve <- c(\'none\')')
-    eval('epsd <- c(1e-9)')
     eval('timeout <- c(13)')
-    eval('bbRule <- c(\'pseudononint\',\'autoorder\',\'greedy\', \'dynamic\',\'rcostfixing\',\'branchreverse\')')
-    eval('epsint <- c(1e-9)')
-    eval('scaling <- c(\'geometric\',\'quadratic\',\'equilibrate\', \'integers\')')
-    eval('improve <- c(\'solution\',\'dualfeas\',\'thetagap\')')
 
     when:
-    eval('result <- CallLpSolve(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,\n' +
+    eval('result <- CallLpSolve(lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,\n' +
       '                        lpType_vec,lpKind_vec,lpLowerBound_vec,lpUpperBound_vec,lpBranchMode_vec,\n' +
       '                        lpGuessBasis_vec,\n' +
-      '                        presolve,epsd,timeout,bbRule,epsint,\n' +
-      '                        scaling,improve)')
+      '                        presolve,timeout)')
     eval('print(result)')
     then:
     that eval('result$solverSolution_vec'), equalTo(c(1000,1000,0,1,0) as SEXP)
