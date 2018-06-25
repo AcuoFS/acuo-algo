@@ -8,7 +8,7 @@ import static com.acuo.algo.RenjinMatchers.closeTo
 import static org.hamcrest.Matchers.equalTo
 import static spock.util.matcher.HamcrestSupport.that
 
-class qtyFunctionsSpec extends Specification implements RenjinEval {
+class resourceUpdateSpec extends Specification implements RenjinEval {
     void setup() {
         eval("library(stats)")
         eval("library('com.acuo.collateral.acuo-algo')")
@@ -42,34 +42,21 @@ class qtyFunctionsSpec extends Specification implements RenjinEval {
         that eval('newResource_df$qtyMin'), equalTo(c(5000,6000) as SEXP)
     }
 
-    void "UsedQtyFromResultList calculates the used quantity from allocation result list"() {
-        when:
-        eval('result_list <- list(mc1=data.frame(Asset=\'EUR\',CustodianAccount=\'ca1\',Quantity=1000),\n' +
-                                'mc2=data.frame(Asset=\'XXX\',CustodianAccount=\'ca2\',Quantity=2000))')
-        eval('resource_vec =c(\'EUR---ca1\',\'XXX---ca2\')')
-        eval('callId_vec <- c(\'mc1\',\'mc2\')')
-
-        eval('quantityUsed_vec <- UsedQtyFromResultList(result_list,resource_vec,callId_vec)')
-        eval('print(quantityUsed_vec)')
-        then:
-        that eval('quantityUsed_vec'), equalTo(c(1000,2000) as SEXP)
-    }
-
-    void "UpdateResourceInfoAndAvailAsset removes the resources with few units left from resource_df and availAsset_df"() {
+    void "RemoveResourceNotInAvailAsset removes the resources that are not in availAsset_df from resource_df"() {
         when:
         eval('resource_df <- data.frame(id=c(\'EUR---ca1\',\'XXX---ca2\'), \n' +
-                            'qtyMin = c(1,3000),\n'+
-                            'minUnit = c(1,1))')
-        eval('availAsset_df <- data.frame(callId = c(\'c1\',\'c1\',\'c2\'),\n' +
-                            'assetCustacId = c(\'EUR---ca1\',\'XXX---ca2\',\'XXX---ca2\'))')
-        eval('callNum <- 2')
+          'qtyMin = c(5000,6000),\n'+
+          'minUnit = c(1,1),\n' +
+          'qtyOri = c(5000,6000),\n' +
+          'qtyRes = c(0.1,0.2))')
+        eval('availAsset_df <- data.frame(\n' +
+          'callId = c(\'mc1\',\'mc1\'),\n' +
+          'resource = c(\'USD---ca1\',\'EUR---ca1\'))')
 
-        eval('updateList <- UpdateResourceInfoAndAvailAsset(resource_df,availAsset_df,callNum)')
-        eval('print(updateList)')
+        eval('resource_df_new <- RemoveResourceNotInAvailAsset(availAsset_df,resource_df)')
+        eval('print(resource_df_new)')
         then:
-        // check the resource left in resource_df
-        that eval('updateList$resource_df$id'), equalTo(c('XXX---ca2') as SEXP)
-        // check the resource left in availAsset_df
-        that eval('unique(updateList$availAsset_df$assetCustacId)'), equalTo(c('XXX---ca2') as SEXP)
+        // check the new resources
+        that eval('resource_df_new$id'), equalTo(c('EUR---ca1') as SEXP)
     }
 }
