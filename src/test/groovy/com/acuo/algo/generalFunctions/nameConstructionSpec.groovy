@@ -8,7 +8,7 @@ import static com.acuo.algo.RenjinMatchers.closeTo
 import static org.hamcrest.Matchers.equalTo
 import static spock.util.matcher.HamcrestSupport.that
 
-class staticFunctionsSpec extends Specification implements RenjinEval {
+class nameConstructionSpec extends Specification implements RenjinEval {
     void setup() {
         eval("library(stats)")
         eval("library('com.acuo.collateral.acuo-algo')")
