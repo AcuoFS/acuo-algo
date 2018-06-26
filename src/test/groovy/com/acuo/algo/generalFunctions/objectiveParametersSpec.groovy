@@ -27,6 +27,23 @@ class objectiveParametersSpec extends Specification implements RenjinEval {
       that eval('cost_mat[2,]'), closeTo(c(0.7071,2.1213) as SEXP,0.0001)
     }
 
+    void "CostVec2Mat converts cost vector to matrix format"() {
+      when:
+      eval('cost_vec <- c(0.0001,0.0002,0.0001)')
+      eval('availAsset_df <- data.frame(\n' +
+                    'callId = c(\'mc1\',\'mc1\',\'mc2\'),\n' +
+                    'resource = c(\'USD---ca1\',\'EUR---ca2\',\'USD---ca1\'))')
+      eval('callId_vec <- c(\'mc1\',\'mc2\')')
+      eval('resource_vec <- c(\'USD---ca1\',\'EUR---ca2\')')
+
+      eval('cost_mat <- CostVec2Mat(cost_vec,availAsset_df,callId_vec,resource_vec)')
+      eval('print(cost_mat)')
+      then:
+      // check the cost matrix
+      that eval('cost_mat[1,]'), closeTo(c(0.0001, 0.0002) as SEXP,0.0001)
+      that eval('cost_mat[2,]'), closeTo(c(0.0001, 0) as SEXP,0.0001)
+    }
+
     void "GenerateStandardizedLiquidityMat derives the standardized liquidity matrix"() {
       when:
       eval('resourceLiquidity_vec <- c(0.9,0.8)')
