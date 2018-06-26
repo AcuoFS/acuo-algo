@@ -209,4 +209,14 @@ class modelFunctionsSpec extends Specification implements RenjinEval {
       // check decision variables' names
       that eval('varName_vec'), equalTo(c('ms1___mc1___USD---ca1', 'ms1___mc1___EUR---ca2', 'ms1___mc2___USD---ca1', 'ms1___dummy___USD---ca1', 'ms1___dummy___EUR---ca2') as SEXP)
     }
+
+    void "GetQtyVarNum returns the number of quantity decision variables"() {
+      when:
+      eval('varName_vec <- c(\'ms1___mc1___USD---ca1\', \'ms1___mc1___EUR---ca2\', \'ms1___mc2___USD---ca1\', \'ms1___dummy___USD---ca1\', \'ms1___dummy___EUR---ca2\')')
+      eval('qtyVarNum <- GetQtyVarNum(varName_vec)')
+      eval('print(qtyVarNum)')
+      then:
+      // check number of quantity deicision variables
+      that eval('qtyVarNum'), equalTo(c(3) as SEXP)
+    }
 }
