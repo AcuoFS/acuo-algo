@@ -66,9 +66,10 @@ class CoreAlgoSpec extends Specification implements RenjinEval {
     eval('fungible <- FALSE')
     eval('minMoveValue <- 1000')
     eval('ifNewAlloc <- TRUE')
-    eval('result <- CoreAlgoV2(configurations,callInfo_df, resource_df, availInfo_list,\n' +
-      '                       timeLimit,pref_vec,operLimit,operLimitMs_vec,fungible,\n' +
-      '                       minMoveValue,ifNewAlloc)')
+    eval('result <- CoreAlgoV2(callInfo_df,availAsset_df,resource_df,\n' +
+      '                       pref_vec,operLimitMs,fungible,\n' +
+      '                       ifNewAlloc,initAllocation_mat,allocated_list,\n' +
+      '                       minMoveValue,timeLimit)')
     eval('print(result)')
     then:
     // check allocation result for mc1
