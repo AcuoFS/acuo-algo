@@ -76,7 +76,7 @@ class CallLpSolveSpec extends Specification implements RenjinEval {
     eval('timeout <- c(13)')
 
     when:
-    eval('result <- CallLpSolve(lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,\n' +
+    eval('result <- CallLpSolve(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,\n' +
       '                        lpType_vec,lpKind_vec,lpLowerBound_vec,lpUpperBound_vec,lpBranchMode_vec,\n' +
       '                        lpGuessBasis_vec,\n' +
       '                        presolve,timeout)')
