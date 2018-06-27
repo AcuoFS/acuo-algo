@@ -1,5 +1,5 @@
 
-CoreAlgoV2 <- function(configurations,callInfo_df,availAsset_df,resource_df,
+CoreAlgoV2 <- function(callInfo_df,availAsset_df,resource_df,
                        pref_vec,operLimitMs,fungible,
                        ifNewAlloc,initAllocation_mat,allocated_list,
                        minMoveValue,timeLimit){
@@ -31,7 +31,7 @@ CoreAlgoV2 <- function(configurations,callInfo_df,availAsset_df,resource_df,
   
   #### Derive Eligibility and Haircut Matrix ###################
   eli_mat <- EliMat(availAsset_df[c('callId','resource')],callInfo_df$id,resource_df$id)
-  haircut_mat <- HaircutVec2Mat(availAsset_df,callInfo_df$id,resource_df$id)
+  haircut_mat <- HaircutMat(availAsset_df,callInfo_df$id,resource_df$id)
 
   #### Generate Standardized Cost and Liquidity #######
   costScore_mat <- GenerateStandardizedCostMat(cost_mat = CostVec2Mat(cost_vec = DefineCost(availAsset_df,resource_df),
@@ -51,7 +51,7 @@ CoreAlgoV2 <- function(configurations,callInfo_df,availAsset_df,resource_df,
   if(optimalResourcesAreSufficient){
     result_mat <- AllocateUnderSufficientOptimalAssets(optimalResource_vec,callInfo_df,availAsset_df,resource_df)
   } else {
-    result_mat <- AllocateUnderInsufficientOptimalAssets(configurations,costScore_mat,liquidityScore_mat,pref_vec,
+    result_mat <- AllocateUnderInsufficientOptimalAssets(costScore_mat,liquidityScore_mat,pref_vec,
                                                          callInfo_df,resource_df,availAsset_df,
                                                          minMoveValue,operLimitMs,fungible,timeLimit,
                                                          ifNewAlloc,allocated_list,initAllocation_mat)

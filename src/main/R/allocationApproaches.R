@@ -6,7 +6,7 @@ AllocateUnderSufficientOptimalAssets <- function(optimalResource_vec,callInfo_df
   #   A matrix of the allocated quantity by each call and each resource
   
   ## Haircut Matrix
-  haircut_mat <- HaircutVec2Mat(availAsset_df,callInfo_df$id,resource_df$id)
+  haircut_mat <- HaircutMat(availAsset_df,callInfo_df$id,resource_df$id)
   ## Sufficient Resource Quantities for Calls Matrix
   resourceSuffQty_mat <- CalculateIntegralUnit(amount = rep(callInfo_df$callAmount,length(resource_df$id)),
                                                valuePerUnit = matrix(rep(resource_df$minUnitValue, length(callInfo_df$id)),nrow=length(callInfo_df$id),byrow=T),
@@ -21,7 +21,7 @@ AllocateUnderSufficientOptimalAssets <- function(optimalResource_vec,callInfo_df
   return(result_mat)
 }
 
-AllocateUnderInsufficientOptimalAssets <- function(configurations,costScore_mat,liquidityScore_mat,pref_vec,
+AllocateUnderInsufficientOptimalAssets <- function(costScore_mat,liquidityScore_mat,pref_vec,
                                                    callInfo_df,resource_df,availAsset_df,
                                                    minMoveValue,operLimitMs,fungible,timeLimit,
                                                    ifNewAlloc,allocated_list,initAllocation_mat){
@@ -109,7 +109,7 @@ AllocateUnderInsufficientOptimalAssets <- function(configurations,costScore_mat,
   
   #### Build the Optimization Model End ##########
   #### Call Solver to Solve the Model ###############
-  solverOutput_list <- CallLpSolve(configurations,lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
+  solverOutput_list <- CallLpSolve(lpObj_vec,lpCon_mat,lpDir_vec,lpRhs_vec,
                                    lpType_vec=lpType_vec,lpKind_vec=lpKind_vec,lpLowerBound_vec=lpLowerBound_vec,lpUpperBound_vec=lpUpperBound_vec,lpBranchMode_vec=lpBranchMode_vec,
                                    lpGuessBasis_vec=lpGuessBasis_vec, 
                                    presolve=lpPresolve,timeout=lpTimeout)
@@ -119,7 +119,7 @@ AllocateUnderInsufficientOptimalAssets <- function(configurations,costScore_mat,
   
   #### Solver Exception Handling ####
   errStatus <- c(2,5,6,7,10,13)
-  #solverStatus <- 5
+  solverStatus <- 5
   if(solverStatus==2){
     errormsg <- paste("ALERR2005: The model constructed by margin calls",paste(callInfo_df$id,collapse = " "),"is infeasible")
     stop(errormsg)
@@ -143,7 +143,7 @@ AllocateUnderInsufficientOptimalAssets <- function(configurations,costScore_mat,
   result_mat <- ResultVec2Mat(solution_vec,callInfo_df$id,resource_df$id,varName_vec)
   
   # Checking
-  haircut_mat <- HaircutVec2Mat(availAsset_df,callInfo_df$id,resource_df$id)
+  haircut_mat <- HaircutMat(availAsset_df,callInfo_df$id,resource_df$id)
   CheckSolverResult(solution_vec,result_mat,varName_vec,callInfo_df,resource_df$qtyMin,minUnitValue_mat,haircut_mat,
                                 lpLowerBound_vec,lpUpperBound_vec,operLimitMs,fungible)
 

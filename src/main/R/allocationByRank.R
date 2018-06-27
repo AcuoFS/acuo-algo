@@ -14,7 +14,7 @@ AllocateByRank <- function(costScore_mat,liquidityScore_mat,pref_vec,callInfo_df
   ##### Static Variables ####
   score_mat <- CalculateObjParams(costScore_mat,liquidityScore_mat,pref_vec,"amount")
   eli_mat <- EliMat(availAsset_df[c('callId','resource')],callInfo_df$id,resource_df$id)
-  haircut_mat <- HaircutVec2Mat(availAsset_df,callInfo_df$id,resource_df$id)
+  haircut_mat <- HaircutMat(availAsset_df,callInfo_df$id,resource_df$id)
   
   #### Dynamic Variables ####
   # Store the Latest Quantity of Each Resource
@@ -99,16 +99,7 @@ AllocateAnotherCall <- function(result_mat,score_vec,movementLimit,idxCall,idxCa
   
   list <- AllocateWithinMovements(result_mat,idxCall,callAmount,movementLimit,resource_vec,score_vec,resourceQty_vec,
                                   haircut_vec,minUnitValue_vec,idx_vec,idxAllocated_vec)
-  print('result_mat'); print(result_mat)
-  print('idxCall'); print(idxCall)
-  print('callAmount'); print(callAmount)
-  print('movementLimit'); print(movementLimit)
-  print('resource_vec'); print(resource_vec)
-  print('resourceQty_vec'); print(resourceQty_vec)
-  print('eli_vec'); print(eli_vec)
-
-  print('idx_vec'); print(idx_vec)
-  print('idxAllocated_vec'); print(idxAllocated_vec)
+  
   if(list$leftCallAmount > 0){
     errormsg <- paste('ALERR2004: It is not sufficient to allocate',movementLimit,'assets for',rownames(result_mat)[idxCall])
     stop(errormsg)
@@ -162,9 +153,9 @@ AllocateWithinMovements <- function(result_mat,idxCall,leftCallAmount,movementLe
 
     optimalResource <- DetermineOptimalResourceByRank(resource_vec[idx_vec],score_vec[idx_vec],resourceQty_vec[idx_vec],haircut_vec[idx_vec],minUnitValue_vec[idx_vec],
                                                       dominator = "score")
-
+    
     idxResource <- match(optimalResource,resource_vec)
-
+    
     idx_vec <- idx_vec[-match(idxResource,idx_vec)]
     if(idxResource %in% idx0Move_vec){
       idx0Move_vec <- idx0Move_vec[-match(idxResource,idx0Move_vec)]
