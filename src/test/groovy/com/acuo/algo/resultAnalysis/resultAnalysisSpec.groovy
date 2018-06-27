@@ -1,4 +1,4 @@
-package resultAnalysis
+package com.acuo.algo.resultAnalysis
 
 import com.acuo.algo.RenjinEval
 import org.renjin.sexp.SEXP
