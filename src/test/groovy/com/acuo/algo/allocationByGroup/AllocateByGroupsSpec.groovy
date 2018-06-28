@@ -95,8 +95,6 @@ class AllocateByGroupsSpec extends Specification implements RenjinEval {
     eval('algoVersion <- 2')
     eval('controls <- list(preAllocateEnable=F,compareEnable=F)')
     eval('ifNewAlloc <- TRUE')
-    eval('initAllocation_mat <- matrix(0,nrow = length(callInfo_df$id),ncol = length(resource_df$id),\n' +
-      '                                   dimnames = list(callInfo_df$id,resource_df$id))')
     eval('minMoveValue <- 300')
     eval('timeLimit <- 13')
     eval('maxCallNum <- 7')
