@@ -167,9 +167,9 @@ class SimpleRunSpec extends Specification implements RenjinEval {
 
     // check allocation result for mc2
     that eval('result$callOutput$mc2$Asset'), equalTo(c('EUR','USD') as SEXP)
-    that eval('round(result$callOutput$mc2$NetAmount,4)'), equalTo(c(1599.88,3081) as SEXP)
+    that eval('round(result$callOutput$mc2$NetAmount,4)'), equalTo(c(1599.88,3082) as SEXP)
     that eval('result$callOutput$mc2$CustodianAccount'), equalTo(c('ca2','ca1') as SEXP)
     that eval('round(result$callOutput$mc2$CostFactor,5)'), equalTo(c(0.0002,0.0003) as SEXP)
-    that eval('round(result$callOutput$mc2$Cost,4)'), equalTo(c(0.4174,0.9243) as SEXP)
+    that eval('round(result$callOutput$mc2$Cost,4)'), equalTo(c(0.4174,0.9246) as SEXP)
   }
 }
