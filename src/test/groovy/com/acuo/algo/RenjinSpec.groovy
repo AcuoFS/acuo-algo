@@ -46,10 +46,4 @@ class RenjinSpec extends Specification implements RenjinEval {
         that eval('x$df1$col1'), closeTo(c_i(1, 1, 1, 1, 1), 0.00001)
         that eval('x$df1$col2'), closeTo(c_i(3, 3, 3, 3, 3), 0.00001)
     }
-
-    void "PasteFun1 concatenation of two sting"() {
-        expect:
-        eval("x <- PasteFun1('a', 'b')")
-        that eval("x"), equalTo(c("a_b") as SEXP)
-    }
 }
