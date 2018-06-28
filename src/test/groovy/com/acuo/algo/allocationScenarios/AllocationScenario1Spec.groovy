@@ -64,7 +64,7 @@ class AllocationScenario1Spec extends Specification implements RenjinEval {
     that eval('result_mat[2,]'), equalTo(c(0,2000) as SEXP)
   }
 
-  void "AllocateByGroups with pre-allocation" (){
+  void "AllocationScenario1 with pre-allocation" (){
     when:
     eval('configurations <- list(debugMode=FALSE)')
     eval('callInfo_df <- data.frame(\n' +
