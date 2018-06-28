@@ -5,6 +5,7 @@ import com.acuo.algo.NativeUtils
 import com.acuo.algo.RenjinEval
 import spock.lang.Specification
 
+import static com.acuo.algo.RenjinMatchers.closeTo
 import static org.hamcrest.Matchers.equalTo
 import static spock.util.matcher.HamcrestSupport.that
 class CoreAlgoSpec extends Specification implements RenjinEval {
@@ -26,31 +27,14 @@ class CoreAlgoSpec extends Specification implements RenjinEval {
                       'marginStatement=c(\'ms1\',\'ms1\'),' +
                       'marginType=c(\'Initial\',\'Variation\'),\n' +
                       'currency=c(\'EUR\',\'USD\'),\n' +
-                      'callAmount=c(1000,2000),\n' +
-                      'FXRate=c(1.2,100),\n' +
-                      'from=c(\'EUR\',\'USD\'),\n' +
-                      'to=c(\'USD\',\'USD\'),\n' +
-                      'stringsAsFactors = F)\n')
+                      'callAmount=c(1000,2000))')
     eval('resource_df <- data.frame(\n' +
                       'id = c(\'EUR---ca2\',\'USD---ca1\'), \n' +
-                      'assetId = c(\'EUR\',\'USD\'), \n' +
-                      'assetName = c(\'Euro\',\'US Dollar\'),' +
-                      'qtyOri = c(5000,6000),\n' +
                       'qtyMin = c(5000,6000),\n' +
-                      'qtyRes = c(0,0),\n' +
-                      'unitValue = c(1,1),\n'+
-                      'minUnit = c(1,1),\n' +
-                      'currency = c(\'EUR\',\'USD\'), \n' +
-                      'custodianAccount = c(\'ca2\',\'ca1\'), \n' +
-                      'venue = c(\'SG\',\'SG\'), \n' +
-                      'FXRate = c(0.83,1),\n' +
-                      'from = c(\'EUR\',\'USD\'),\n' +
-                      'to = c(\'USD\',\'USD\'),\n' +
-                      'oriFXRate = c(1.2,1),\n' +
-                      'stringsAsFactors = F)')
+                      'minUnitValue = c(1,1))')
     eval('availAsset_df <- data.frame(\n' +
                       'callId = c(\'mc1\',\'mc2\',\'mc2\'),\n' +
-                      'assetCustacId = c(\'EUR---ca2\',\'EUR---ca2\',\'USD---ca1\'),\n' +
+                      'resource = c(\'EUR---ca2\',\'EUR---ca2\',\'USD---ca1\'),\n' +
                       'haircut = c(0,0,0),\n' +
                       'FXHaircut = c(0.08,0.08,0),\n' +
                       'externalCost = c(0.0001,0.0003,0.0001),\n' +
@@ -58,37 +42,27 @@ class CoreAlgoSpec extends Specification implements RenjinEval {
                       'internalCost = c(0.0002,0.0001,0.0002),\n' +
                       'opptCost = c(0.0001,-0.0001,0.0001),\n' +
                       'stringsAsFactors = F)')
-    eval('availInfo_list <- AssetByCallInfo(callInfo_df$id,resource_df$id,availAsset_df,resource_df)')
-    eval('timeLimit <- 13')
     eval('pref_vec <- c(5,5)')
-    eval('operLimit <- 4')
-    eval('operLimitMs_vec <- c(2,2)')
+    eval('operLimitMs <- 2')
     eval('fungible <- FALSE')
-    eval('minMoveValue <- 1000')
     eval('ifNewAlloc <- TRUE')
-    eval('result <- CoreAlgoV2(callInfo_df,availAsset_df,resource_df,\n' +
+    eval('initAllocation_mat <- matrix(0,nrow = length(callInfo_df$id),ncol = length(resource_df$id),\n' +
+      '                                   dimnames = list(callInfo_df$id,resource_df$id))')
+    eval('minMoveValue <- 1000')
+    eval('timeLimit <- 13')
+    eval('list <- CoreAlgoV2(configurations,callInfo_df,availAsset_df,resource_df,\n' +
       '                       pref_vec,operLimitMs,fungible,\n' +
-      '                       ifNewAlloc,initAllocation_mat,allocated_list,\n' +
+      '                       ifNewAlloc,initAllocation_mat,list(),\n' +
       '                       minMoveValue,timeLimit)')
-    eval('print(result)')
+    eval('print(list)')
+    eval('result_mat <- list$result_mat')
+    eval('rownames(result_mat) <- NULL')
+    eval('colnames(result_mat) <- NULL')
     then:
-    // check allocation result for mc1
-    that eval('result$callOutput_list$mc1$Asset'), equalTo(c('EUR') as SEXP)
-    that eval('round(result$callOutput_list$mc1$NetAmount,4)'), equalTo(c(830.7600) as SEXP)
-    that eval('round(result$callOutput_list$mc1$`NetAmount(USD)`,4)'), equalTo(c(1000.9157) as SEXP)
-    that eval('round(result$callOutput_list$mc1$Amount,4)'), equalTo(c(903) as SEXP)
-    that eval('result$callOutput_list$mc1$Quantity'), equalTo(c(903) as SEXP)
-    that eval('result$callOutput_list$mc1$FXRatePerUSD'), equalTo(c(0.83) as SEXP)
-    that eval('result$callOutput_list$mc1$FXRate'), equalTo(c(1.2) as SEXP)
-    that eval('result$callOutput_list$mc1$marginType'), equalTo(c('Initial') as SEXP)
-    that eval('round(result$callOutput_list$mc1$Cost,4)'), equalTo(c(0.3264) as SEXP)
-
-    // check allocation result for mc2
-    that eval('result$callOutput_list$mc2$Asset'), equalTo(c('USD') as SEXP)
-    that eval('result$callOutput_list$mc2$NetAmount'), equalTo(c(2000) as SEXP)
-    that eval('result$callOutput_list$mc2$CustodianAccount'), equalTo(c('ca1') as SEXP)
-    that eval('round(result$callOutput_list$mc2$CostFactor,5)'), equalTo(c(0.0003) as SEXP)
-    that eval('round(result$callOutput_list$mc2$Cost,4)'), equalTo(c(0.6) as SEXP)
+    // check allocation result and objective value
+    that eval('result_mat[1,]'), equalTo(c(1087,0) as SEXP)
+    that eval('result_mat[2,]'), equalTo(c(0,2000) as SEXP)
+    that eval('list$objValue'), closeTo(c(43656.7727) as SEXP,0.0001)
   }
 
   void "CoreAlgoV2 with solver" (){
@@ -99,31 +73,15 @@ class CoreAlgoSpec extends Specification implements RenjinEval {
       'marginStatement=c(\'ms1\',\'ms1\'),' +
       'marginType=c(\'Initial\',\'Variation\'),\n' +
       'currency=c(\'EUR\',\'USD\'),\n' +
-      'callAmount=c(5000,3000),\n' +
-      'FXRate=c(1.2,100),\n' +
-      'from=c(\'EUR\',\'USD\'),\n' +
-      'to=c(\'USD\',\'USD\'),\n' +
-      'stringsAsFactors = F)\n')
+      'callAmount=c(4000,3000))')
     eval('resource_df <- data.frame(\n' +
       'id = c(\'EUR---ca2\',\'USD---ca1\'), \n' +
-      'assetId = c(\'EUR\',\'USD\'), \n' +
-      'assetName = c(\'Euro\',\'US Dollar\'),' +
-      'qtyOri = c(5000,6000),\n' +
       'qtyMin = c(5000,6000),\n' +
-      'qtyRes = c(0,0),\n' +
-      'unitValue = c(1,1),\n'+
-      'minUnit = c(1,1),\n' +
-      'currency = c(\'EUR\',\'USD\'), \n' +
-      'custodianAccount = c(\'ca2\',\'ca1\'), \n' +
-      'venue = c(\'SG\',\'SG\'), \n' +
-      'FXRate = c(0.83,1),\n' +
-      'from = c(\'EUR\',\'USD\'),\n' +
-      'to = c(\'USD\',\'USD\'),\n' +
-      'oriFXRate = c(1.2,1),\n' +
-      'stringsAsFactors = F)')
+      'minUnitValue = c(1,1),\n' +
+      'currency = c(\'EUR\',\'USD\'))')
     eval('availAsset_df <- data.frame(\n' +
       'callId = c(\'mc1\',\'mc1\',\'mc2\'),\n' +
-      'assetCustacId = c(\'EUR---ca2\',\'USD---ca1\',\'EUR---ca2\'),\n' +
+      'resource = c(\'EUR---ca2\',\'USD---ca1\',\'EUR---ca2\'),\n' +
       'haircut = c(0,0,0),\n' +
       'FXHaircut = c(0.08,0,0.08),\n' +
       'externalCost = c(0.0001,0.0002,0.0001),\n' +
@@ -131,38 +89,27 @@ class CoreAlgoSpec extends Specification implements RenjinEval {
       'internalCost = c(0.0001,0.0001,0.0002),\n' +
       'opptCost = c(0.0001,-0.0001,0.0001),\n' +
       'stringsAsFactors = F)')
-    eval('availInfo_list <- AssetByCallInfo(callInfo_df$id,resource_df$id,availAsset_df,resource_df)')
-    eval('print(availInfo_list)')
-    eval('timeLimit <- 13')
-    eval('pref_vec <- c(10,0)')
-    eval('operLimit <- 4')
-    eval('operLimitMs_vec <- c(2,2)')
+    eval('pref_vec <- c(5,5)')
+    eval('operLimitMs <- 2')
     eval('fungible <- FALSE')
-    eval('minMoveValue <- 1000')
     eval('ifNewAlloc <- TRUE')
-    eval('result <- CoreAlgoV2(configurations,callInfo_df, resource_df, availInfo_list,\n' +
-      '                       timeLimit,pref_vec,operLimit,operLimitMs_vec,fungible,\n' +
-      '                       minMoveValue,ifNewAlloc)')
-    eval('print(result)')
+    eval('initAllocation_mat <- matrix(0,nrow = length(callInfo_df$id),ncol = length(resource_df$id),\n' +
+      '                                   dimnames = list(callInfo_df$id,resource_df$id))')
+    eval('minMoveValue <- 1000')
+    eval('timeLimit <- 13')
+    eval('list <- CoreAlgoV2(configurations,callInfo_df,availAsset_df,resource_df,\n' +
+      '                       pref_vec,operLimitMs,fungible,\n' +
+      '                       ifNewAlloc,initAllocation_mat,list(),\n' +
+      '                       minMoveValue,timeLimit)')
+    eval('print(list)')
+    eval('result_mat <- list$result_mat')
+    eval('rownames(result_mat) <- NULL')
+    eval('colnames(result_mat) <- NULL')
     then:
-    // check solver status
-    that eval('result$solverStatus + 0'), equalTo(c(0) as SEXP)
-    // check allocation result for mc1
-    that eval('result$callOutput_list$mc1$Asset'), equalTo(c('EUR','USD') as SEXP)
-    that eval('round(result$callOutput_list$mc1$NetAmount,4)'), equalTo(c(2109.56,2459) as SEXP)
-    that eval('round(result$callOutput_list$mc1$`NetAmount(USD)`,4)'), equalTo(c(2541.6386,2459) as SEXP)
-    that eval('round(result$callOutput_list$mc1$Amount,4)'), equalTo(c(2293,2459) as SEXP)
-    that eval('result$callOutput_list$mc1$Quantity'), equalTo(c(2293,2459) as SEXP)
-    that eval('result$callOutput_list$mc1$FXRatePerUSD'), equalTo(c(0.83,1) as SEXP)
-    that eval('result$callOutput_list$mc1$FXRate'), equalTo(c(1.2,1) as SEXP)
-    that eval('result$callOutput_list$mc1$marginType'), equalTo(c('Initial','Initial') as SEXP)
-    that eval('round(result$callOutput_list$mc1$Cost,4)'), equalTo(c(0.5525,0.7377) as SEXP)
+    // check allocation result and objective value
+    that eval('result_mat[1,]'), equalTo(c(1739,2401) as SEXP)
+    that eval('result_mat[2,]'), equalTo(c(3261,0) as SEXP)
+    that eval('list$objValue'), closeTo(c(109346.9926) as SEXP,0.0001)
 
-    // check allocation result for mc2
-    that eval('result$callOutput_list$mc2$Asset'), equalTo(c('EUR') as SEXP)
-    that eval('result$callOutput_list$mc2$NetAmount'), equalTo(c(2490.44) as SEXP)
-    that eval('result$callOutput_list$mc2$CustodianAccount'), equalTo(c('ca2') as SEXP)
-    that eval('round(result$callOutput_list$mc2$CostFactor,5)'), equalTo(c(0.0003) as SEXP)
-    that eval('round(result$callOutput_list$mc2$Cost,4)'), equalTo(c(0.9784) as SEXP)
   }
 }
