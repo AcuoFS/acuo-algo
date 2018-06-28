@@ -151,9 +151,12 @@ OrderCallId <- function(callOrderMethod,callInfo_df){
   ## method 1: By margin call amount, decreasing
   ## method 2: By margin type, VM then IM; sub order by call amount
   ## method 3: By total call amount in margin statement, decreasing
+  ## method 4: By total call amount in margin statement, increasing
   
   #### Assign Default Values
-  callOrderMethod <- 3
+  if(missing(callOrderMethod)){
+    callOrderMethod <- 3
+  }
   
   #### Order Calls
   if(callOrderMethod==0){ # keep original
@@ -183,7 +186,7 @@ OrderCallId <- function(callOrderMethod,callInfo_df){
       idxCurrent <- idxCurrent+length(idxTemp_vec)
     }
     callInfo_df<- newCallInfo_df
-  }else if(callOrderMethod==4){ # by margin statement, call amount in margin statement, increasing
+  }else if(callOrderMethod==4){
     msAggrCall_df <- aggregate(callAmount~marginStatement,data=callInfo_df,sum)
     msAggrCall_df <- msAggrCall_df[order(msAggrCall_df$callAmount,decreasing=F),]
     tempMs_vec <- msAggrCall_df$marginStatement
