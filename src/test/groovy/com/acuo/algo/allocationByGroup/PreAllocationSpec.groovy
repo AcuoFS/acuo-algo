@@ -105,5 +105,6 @@ class PreAllocationSpec extends Specification implements RenjinEval {
     // check allocation result
     that eval('result_mat[1,]'), equalTo(c(4348,0) as SEXP)
     that eval('result_mat[2,]'), equalTo(c(652,2401) as SEXP)
+    that eval('list$objValue'), equalTo(c(147778.2462) as SEXP)
   }
 }
