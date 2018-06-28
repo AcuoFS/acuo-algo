@@ -53,7 +53,7 @@ class AllocationScenario2Spec extends Specification implements RenjinEval {
     eval('maxCallNum <- 7')
     eval('maxMsNum <- 4')
     eval('callOrderMethod <- 3')
-    eval('result_mat <- AllocationScenario1(configurations,callInfo_df,availAsset_df,resource_df,pref_vec,operLimitMs,fungible,\n' +
+    eval('result_mat <- AllocationScenario2(configurations,callInfo_df,availAsset_df,resource_df,pref_vec,operLimitMs,fungible,\n' +
       '                                algoVersion,controls,ifNewAlloc,list(),minMoveValue,timeLimit,maxCallNum,maxMsNum,callOrderMethod)')
     eval('print(result_mat)')
     eval('rownames(result_mat) <- NULL')
@@ -100,7 +100,7 @@ class AllocationScenario2Spec extends Specification implements RenjinEval {
     eval('maxCallNum <- 7')
     eval('maxMsNum <- 4')
     eval('callOrderMethod <- 3')
-    eval('result_mat <- AllocationScenario1(configurations,callInfo_df,availAsset_df,resource_df,pref_vec,operLimitMs,fungible,\n' +
+    eval('result_mat <- AllocationScenario2(configurations,callInfo_df,availAsset_df,resource_df,pref_vec,operLimitMs,fungible,\n' +
       '                                algoVersion,controls,ifNewAlloc,list(),minMoveValue,timeLimit,maxCallNum,maxMsNum,callOrderMethod)')
     eval('print(result_mat)')
     eval('rownames(result_mat) <- NULL')
@@ -108,6 +108,6 @@ class AllocationScenario2Spec extends Specification implements RenjinEval {
     then:
     // check allocation result
     that eval('result_mat[1,]'), equalTo(c(4348,0) as SEXP)
-    that eval('result_mat[2,]'), equalTo(c(652,2401) as SEXP)
+    that eval('result_mat[2,]'), equalTo(c(0,3000) as SEXP)
   }
 }
